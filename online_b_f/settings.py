@@ -76,8 +76,11 @@ INSTALLED_APPS = [
 
     # User Defined Apps
     'app',
+    'api',
 ]
 
+
+AUTH_USER_MODEL = 'app.CustomUser'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),

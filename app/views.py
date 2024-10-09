@@ -11,18 +11,19 @@ def main_home(request):
 
 
 def login(request):
-    return render(request, "main/login.html", {})
+    return render(request, "dashboard/login.html", {})
 
 
 
 def register(request):
-    return render(request, "main/register.html", {})
+    return render(request, "dashboard/register.html", {})
 
 
 
 
 
-
+def chartpage(request):
+    return render(request, "dashboard/charts-chartjs.html", {})
 
 
 

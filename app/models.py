@@ -1,10 +1,42 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.models import User
+from django.utils import timezone
+from .managers import CustomUserManager
+from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+
 # Create your models here.
 
 
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    """
+    Custom User model for the bank app where email is the unique identifier for authentication.
+    """
+
+    email = models.EmailField(_('email address'), unique=True)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=15, unique=True)
+    address = models.TextField()
+    date_joined = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number']
+
+    def __str__(self):
+        return self.email
+    
+    class Meta:
+        verbose_name_plural = "Users"
+        verbose_name = "User"
+
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -15,19 +47,22 @@ class Customer(models.Model):
 
 class Account(models.Model):
     ACCOUNT_TYPES = (
-        ('SAV', 'Savings'),
-        ('CUR', 'Current'),
+        ('CHECKING', 'Checking'),
+        ('SAVINGS', 'Savings'),
+        ('MONEY_MARKET', 'Money Market'),
+        ('CD', 'Certificate of Deposit (CD)'),
     )
 
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    account_number = models.CharField(max_length=15, unique=True)
-    account_type = models.CharField(max_length=3, choices=ACCOUNT_TYPES)
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    account_number = models.CharField(max_length=20, unique=True)
+    account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.customer.user.username} - {self.account_number}"
+        return f"{self.customer.user.email} - {self.account_type} ({self.account_number})"
+
     
 
 class Transaction(models.Model):
@@ -73,7 +108,7 @@ class Loan(models.Model):
     is_paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Loan for {self.customer.user.username} - {self.amount}"
+        return f"Loan for {self.customer.user.email} - {self.amount}"
 
 
 
