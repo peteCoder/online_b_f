@@ -19,6 +19,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=15, unique=True)
     address = models.TextField()
+    ssn = models.CharField(max_length=50)
+    
     date_joined = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -36,10 +38,25 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = "User"
 
 class Customer(models.Model):
+    EMPLOYMENT_STATUS = [
+        ("employed", "employed"),
+        ("self-employed", "self-employed"),
+        ("unemployed", "unemployed"),
+    ]
+    PREFERRED_ACCOUNT_TYPE = [
+        ('CHECKING', 'Checking'),
+        ('SAVINGS', 'Savings'),
+        ('MONEY_MARKET', 'Money Market'),
+        ('CD', 'Certificate of Deposit (CD)'),
+    ]
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    annual_income = models.CharField(max_length=100)
+    employment_status = models.CharField(max_length=100, choices=EMPLOYMENT_STATUS)
+    preferred_account_type = models.CharField(max_length=100, choices=PREFERRED_ACCOUNT_TYPE)
+
 
     def __str__(self):
         return self.user.username

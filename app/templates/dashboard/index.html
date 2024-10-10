@@ -1,278 +1,254 @@
 {% extends 'dashboard_base.html' %}
 {% load static %}
 
-
-
 {% block content %}
 <main class="content">
-	<div class="container-fluid p-0">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3"><strong>Banking</strong> Dashboard</h1>
 
-		<h1 class="h3 mb-3"><strong>Analytics</strong> Dashboard</h1>
+        <div class="row">
+            <!-- Account Overview Section -->
+            <div class="col-xl-6 col-xxl-5 d-flex">
+                <div class="w-100">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Total Balance</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle" data-feather="dollar-sign"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="mt-1 mb-3">$12,480.23</h1>
+                                    <div class="mb-0">
+                                        <span class="text-success"><i class="mdi mdi-arrow-bottom-right"></i> 4.7% </span>
+                                        <span class="text-muted">Since last month</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Savings Account</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle" data-feather="shield"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="mt-1 mb-3">$8,910.55</h1>
+                                    <div class="mb-0">
+                                        <span class="text-success"><i class="mdi mdi-arrow-bottom-right"></i> 3.2% </span>
+                                        <span class="text-muted">Since last month</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Checking Account</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle" data-feather="credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="mt-1 mb-3">$3,569.68</h1>
+                                    <div class="mb-0">
+                                        <span class="text-danger"><i class="mdi mdi-arrow-bottom-right"></i> -1.4% </span>
+                                        <span class="text-muted">Since last month</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Pending Loan Amount</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle" data-feather="file-text"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="mt-1 mb-3">$15,000</h1>
+                                    <div class="mb-0">
+                                        <span class="text-warning"><i class="mdi mdi-arrow-right"></i> Pending approval</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-		<div class="row">
-			<div class="col-xl-6 col-xxl-5 d-flex">
-				<div class="w-100">
-					<div class="row">
-						<div class="col-sm-6">
-							<div class="card">
-								<div class="card-body">
-									<div class="row">
-										<div class="col mt-0">
-											<h5 class="card-title">Sales</h5>
-										</div>
+            <!-- Recent Transactions Section -->
+            <div class="col-xl-6 col-xxl-7">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Transactions</h5>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="chart chart-sm">
+                            <canvas id="chartjs-line"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-										<div class="col-auto">
-											<div class="stat text-primary">
-												<i class="align-middle" data-feather="truck"></i>
-											</div>
-										</div>
-									</div>
-									<h1 class="mt-1 mb-3">2.382</h1>
-									<div class="mb-0">
-										<span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> -3.65% </span>
-										<span class="text-muted">Since last week</span>
-									</div>
-								</div>
-							</div>
-							<div class="card">
-								<div class="card-body">
-									<div class="row">
-										<div class="col mt-0">
-											<h5 class="card-title">Visitors</h5>
-										</div>
+        <div class="row">
+            <!-- Spending Breakdown -->
+            <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Spending Categories</h5>
+                    </div>
+                    <div class="card-body d-flex">
+                        <div class="align-self-center w-100">
+                            <div class="py-3">
+                                <div class="chart chart-xs">
+                                    <canvas id="spending-pie-chart"></canvas>
+                                </div>
+                            </div>
+                            <table class="table mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td>Groceries</td>
+                                        <td class="text-end">$1,230</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Utilities</td>
+                                        <td class="text-end">$450</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Entertainment</td>
+                                        <td class="text-end">$560</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-										<div class="col-auto">
-											<div class="stat text-primary">
-												<i class="align-middle" data-feather="users"></i>
-											</div>
-										</div>
-									</div>
-									<h1 class="mt-1 mb-3">14.212</h1>
-									<div class="mb-0">
-										<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 5.25% </span>
-										<span class="text-muted">Since last week</span>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-6">
-							<div class="card">
-								<div class="card-body">
-									<div class="row">
-										<div class="col mt-0">
-											<h5 class="card-title">Earnings</h5>
-										</div>
+            <!-- Financial Overview -->
+            <div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Financial Overview</h5>
+                    </div>
+                    <div class="card-body px-4">
+                        <div id="financial-overview-map" style="height:350px;"></div>
+                    </div>
+                </div>
+            </div>
 
-										<div class="col-auto">
-											<div class="stat text-primary">
-												<i class="align-middle" data-feather="dollar-sign"></i>
-											</div>
-										</div>
-									</div>
-									<h1 class="mt-1 mb-3">$21.300</h1>
-									<div class="mb-0">
-										<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 6.65% </span>
-										<span class="text-muted">Since last week</span>
-									</div>
-								</div>
-							</div>
-							<div class="card">
-								<div class="card-body">
-									<div class="row">
-										<div class="col mt-0">
-											<h5 class="card-title">Orders</h5>
-										</div>
+            <!-- Calendar Widget -->
+            <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Calendar</h5>
+                    </div>
+                    <div class="card-body d-flex">
+                        <div class="align-self-center w-100">
+                            <div class="chart">
+                                <div id="datetimepicker-dashboard"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-										<div class="col-auto">
-											<div class="stat text-primary">
-												<i class="align-middle" data-feather="shopping-cart"></i>
-											</div>
-										</div>
-									</div>
-									<h1 class="mt-1 mb-3">64</h1>
-									<div class="mb-0">
-										<span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> -2.25% </span>
-										<span class="text-muted">Since last week</span>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+        <!-- Latest Loan Applications -->
+        <div class="row">
+            <div class="col-12 col-lg-8 col-xxl-9 d-flex">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Latest Loan Applications</h5>
+                    </div>
+                    <table class="table table-hover my-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th class="d-none d-xl-table-cell">Application Date</th>
+                                <th class="d-none d-xl-table-cell">Amount</th>
+                                <th>Status</th>
+                                <th class="d-none d-md-table-cell">Loan Officer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td class="d-none d-xl-table-cell">01/09/2024</td>
+                                <td class="d-none d-xl-table-cell">$10,000</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td class="d-none d-md-table-cell">Jane Smith</td>
+                            </tr>
+                            <tr>
+                                <td>Jane Cooper</td>
+                                <td class="d-none d-xl-table-cell">15/08/2024</td>
+                                <td class="d-none d-xl-table-cell">$5,000</td>
+                                <td><span class="badge bg-success">Approved</span></td>
+                                <td class="d-none d-md-table-cell">William Harris</td>
+                            </tr>
+                            <tr>
+                                <td>Michael Brown</td>
+                                <td class="d-none d-xl-table-cell">07/08/2024</td>
+                                <td class="d-none d-xl-table-cell">$12,000</td>
+                                <td><span class="badge bg-danger">Rejected</span></td>
+                                <td class="d-none d-md-table-cell">Sharon Lessman</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-			<div class="col-xl-6 col-xxl-7">
-				<div class="card flex-fill w-100">
-					<div class="card-header">
+            <!-- Monthly Spending -->
+            <div class="col-12 col-lg-4 col-xxl-3 d-flex">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Monthly Spending</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="mb-4">January 2024</h6>
+                        <div class="progress progress-sm mb-4">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 50%;">
+                                $2,500/$5,000
+                            </div>
+                        </div>
 
-						<h5 class="card-title mb-0">Recent Movement</h5>
-					</div>
-					<div class="card-body py-3">
-						<div class="chart chart-sm">
-							<canvas id="chartjs-dashboard-line"></canvas>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+                        <h6 class="mb-4">February 2024</h6>
+                        <div class="progress progress-sm mb-4">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;">
+                                $3,750/$5,000
+                            </div>
+                        </div>
 
-		<div class="row">
-			<div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
-				<div class="card flex-fill w-100">
-					<div class="card-header">
+                        <h6 class="mb-4">March 2024</h6>
+                        <div class="progress progress-sm mb-4">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 60%;">
+                                $3,000/$5,000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-						<h5 class="card-title mb-0">Browser Usage</h5>
-					</div>
-					<div class="card-body d-flex">
-						<div class="align-self-center w-100">
-							<div class="py-3">
-								<div class="chart chart-xs">
-									<canvas id="chartjs-dashboard-pie"></canvas>
-								</div>
-							</div>
-
-							<table class="table mb-0">
-								<tbody>
-									<tr>
-										<td>Chrome</td>
-										<td class="text-end">4306</td>
-									</tr>
-									<tr>
-										<td>Firefox</td>
-										<td class="text-end">3801</td>
-									</tr>
-									<tr>
-										<td>IE</td>
-										<td class="text-end">1689</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
-				<div class="card flex-fill w-100">
-					<div class="card-header">
-
-						<h5 class="card-title mb-0">Real-Time</h5>
-					</div>
-					<div class="card-body px-4">
-						<div id="world_map" style="height:350px;"></div>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
-				<div class="card flex-fill">
-					<div class="card-header">
-
-						<h5 class="card-title mb-0">Calendar</h5>
-					</div>
-					<div class="card-body d-flex">
-						<div class="align-self-center w-100">
-							<div class="chart">
-								<div id="datetimepicker-dashboard"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-12 col-lg-8 col-xxl-9 d-flex">
-				<div class="card flex-fill">
-					<div class="card-header">
-
-						<h5 class="card-title mb-0">Latest Projects</h5>
-					</div>
-					<table class="table table-hover my-0">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th class="d-none d-xl-table-cell">Start Date</th>
-								<th class="d-none d-xl-table-cell">End Date</th>
-								<th>Status</th>
-								<th class="d-none d-md-table-cell">Assignee</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Project Apollo</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-success">Done</span></td>
-								<td class="d-none d-md-table-cell">Vanessa Tucker</td>
-							</tr>
-							<tr>
-								<td>Project Fireball</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-danger">Cancelled</span></td>
-								<td class="d-none d-md-table-cell">William Harris</td>
-							</tr>
-							<tr>
-								<td>Project Hades</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-success">Done</span></td>
-								<td class="d-none d-md-table-cell">Sharon Lessman</td>
-							</tr>
-							<tr>
-								<td>Project Nitro</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-warning">In progress</span></td>
-								<td class="d-none d-md-table-cell">Vanessa Tucker</td>
-							</tr>
-							<tr>
-								<td>Project Phoenix</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-success">Done</span></td>
-								<td class="d-none d-md-table-cell">William Harris</td>
-							</tr>
-							<tr>
-								<td>Project X</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-success">Done</span></td>
-								<td class="d-none d-md-table-cell">Sharon Lessman</td>
-							</tr>
-							<tr>
-								<td>Project Romeo</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-success">Done</span></td>
-								<td class="d-none d-md-table-cell">Christina Mason</td>
-							</tr>
-							<tr>
-								<td>Project Wombat</td>
-								<td class="d-none d-xl-table-cell">01/01/2023</td>
-								<td class="d-none d-xl-table-cell">31/06/2023</td>
-								<td><span class="badge bg-warning">In progress</span></td>
-								<td class="d-none d-md-table-cell">William Harris</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="col-12 col-lg-4 col-xxl-3 d-flex">
-				<div class="card flex-fill w-100">
-					<div class="card-header">
-
-						<h5 class="card-title mb-0">Monthly Sales</h5>
-					</div>
-					<div class="card-body d-flex w-100">
-						<div class="align-self-center chart chart-lg">
-							<canvas id="chartjs-dashboard-bar"></canvas>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-	</div>
+    </div>
 </main>
-
 {% endblock %}
