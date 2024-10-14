@@ -39,27 +39,38 @@
 
 	<script src="{% static 'static/js/app.js' %}"></script>
 
+	{% block script %}
+	{% endblock %}
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
+	
+			console.log("this scripts is working")
+			// Get data passed from the backend
+			var checkingData = JSON.parse('{{ checking_data|safe }}');
+			var savingsData = JSON.parse('{{ savings_data|safe }}');
+			var months = JSON.parse('{{ months|safe }}');
+
+			console.log(checkingData)
+	
 			// Line chart
-			new Chart(document.getElementById("chartjs-line"), {
+			new Chart(document.getElementById("recent-transaction-line"), {
 				type: "line",
 				data: {
-					labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+					labels: months,
 					datasets: [{
-						label: "Sales ($)",
+						label: "Checking Account ($)",
 						fill: true,
 						backgroundColor: "transparent",
 						borderColor: window.theme.primary,
-						data: [2115, 1562, 1584, 1892, 1487, 2223, 2966, 2448, 2905, 3838, 2917, 3327]
+						data: checkingData
 					}, {
-						label: "Orders",
+						label: "Saving Account ($)",
 						fill: true,
 						backgroundColor: "transparent",
 						borderColor: "#adb5bd",
 						borderDash: [4, 4],
-						data: [958, 724, 629, 883, 915, 1214, 1476, 1212, 1554, 2128, 1466, 1827]
+						data: savingsData
 					}]
 				},
 				options: {
@@ -101,6 +112,9 @@
 			});
 		});
 	</script>
+
+
+	
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			// Bar chart

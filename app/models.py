@@ -5,6 +5,7 @@ from django.utils import timezone
 from .managers import CustomUserManager
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from functools import reduce
 
 # Create your models here.
 
@@ -33,11 +34,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
     
+    @property
+    def get_total_amount_in_account(self):
+        # User account balance
+        accounts = self.profile.account_set.all()
+        total = float(reduce(lambda x,y :x.balance + y.balance, accounts))
+        return total
+    
     class Meta:
         verbose_name_plural = "Users"
         verbose_name = "User"
 
-class Customer(models.Model):
+class Profile(models.Model):
     EMPLOYMENT_STATUS = [
         ("employed", "employed"),
         ("self-employed", "self-employed"),
@@ -56,10 +64,14 @@ class Customer(models.Model):
     annual_income = models.CharField(max_length=100)
     employment_status = models.CharField(max_length=100, choices=EMPLOYMENT_STATUS)
     preferred_account_type = models.CharField(max_length=100, choices=PREFERRED_ACCOUNT_TYPE)
-
+    profile_image = models.ImageField(upload_to="profile/images")
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
+    
+    class Meta:
+        verbose_name_plural = "Profiles"
+        verbose_name = "Profile"
 
 
 class Account(models.Model):
@@ -70,7 +82,7 @@ class Account(models.Model):
         ('CD', 'Certificate of Deposit (CD)'),
     )
 
-    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    customer = models.ForeignKey(Profile, on_delete=models.CASCADE)
     account_number = models.CharField(max_length=20, unique=True)
     account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
@@ -80,7 +92,9 @@ class Account(models.Model):
     def __str__(self):
         return f"{self.customer.user.email} - {self.account_type} ({self.account_number})"
 
-    
+    class Meta:
+        verbose_name_plural = "Accounts"
+        verbose_name = "Account"
 
 class Transaction(models.Model):
     TRANSACTION_TYPES = (
@@ -89,6 +103,8 @@ class Transaction(models.Model):
         ('TRANSFER', 'Transfer'),
     )
 
+    
+    
     from_account = models.ForeignKey(Account, related_name='from_transactions', on_delete=models.CASCADE)
     to_account = models.ForeignKey(Account, related_name='to_transactions', on_delete=models.CASCADE, null=True, blank=True)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
@@ -98,7 +114,10 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.transaction_type} - {self.amount} from {self.from_account.account_number}"
-
+    
+    class Meta:
+        verbose_name_plural = "Transactions"
+        verbose_name = "Transaction"
 
 class Card(models.Model):
     CARD_TYPES = (
@@ -106,7 +125,7 @@ class Card(models.Model):
         ('CREDIT', 'Credit'),
     )
 
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Profile, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     card_number = models.CharField(max_length=16, unique=True)
     card_type = models.CharField(max_length=6, choices=CARD_TYPES)
@@ -114,10 +133,14 @@ class Card(models.Model):
     cvv = models.CharField(max_length=3)
 
     def __str__(self):
-        return f"{self.card_type} card for {self.customer.user.username}"
+        return f"{self.card_type} card for {self.customer.user.email}"
+    
+    class Meta:
+        verbose_name_plural = "Cards"
+        verbose_name = "Card"
 
 class Loan(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Profile, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2)
     loan_date = models.DateTimeField(auto_now_add=True)
@@ -126,6 +149,10 @@ class Loan(models.Model):
 
     def __str__(self):
         return f"Loan for {self.customer.user.email} - {self.amount}"
+    
+    class Meta:
+        verbose_name_plural = "Loans"
+        verbose_name = "Loan"
 
 
 

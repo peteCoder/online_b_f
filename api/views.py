@@ -5,6 +5,65 @@ from rest_framework import status
 
 from .helpers import check_email, is_valid_password
 
+
+from django.shortcuts import render
+from app.models import Account, Transaction, Loan, Profile
+
+from django.contrib.auth import get_user_model
+
+from django.db.models import Sum, Count
+from django.utils import timezone
+from collections import defaultdict
+import calendar
+from django.db.models.functions import ExtractMonth
+
+
+User = get_user_model()
+
+def get_monthly_transactions(account_type, year, user):
+    transactions = Transaction.objects.filter(
+        from_account__account_type=account_type,
+        timestamp__year=year
+    ).annotate(month=ExtractMonth('timestamp')).values('month').annotate(total=Sum('amount')).order_by('month')
+
+    monthly_data = defaultdict(lambda: 0)  # Default to 0 if no data for a month
+    for transaction in transactions:
+        monthly_data[transaction['month']] = transaction['total']
+
+    # Return data as list of amounts for each month
+    return [int(monthly_data[month]) for month in range(1, 13)]
+
+@api_view(['GET'])
+def generate_transaction_chart(request):
+
+    current_year = timezone.now().year
+
+    checking_data = get_monthly_transactions('CHECKING', current_year)
+    savings_data = get_monthly_transactions('SAVINGS', current_year)
+
+    return Response({
+        'checking_data': checking_data,
+        'savings_data': savings_data,
+        'months': list(calendar.month_abbr[1:]),
+    }, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Create your views here.
 @api_view(['POST'])
 def create_user(request):
