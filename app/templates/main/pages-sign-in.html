@@ -7,10 +7,9 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
-	<meta name="author" content="AdminKit">
-	<meta name="keywords"
-		content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+	<meta name="description" content="First citizen bank">
+	<meta name="author" content="First citizen bank">
+	<meta name="keywords" content="First citizen bank">
 
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="shortcut icon" href="{% static 'static/img/icons/icon-48x48.png' %}" />
@@ -21,18 +20,38 @@
 
 	<link href="{% static 'static/css/app.css' %}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<style>
+		.asterisks {
+			color: red;
+		}
+
+		.first__logo {
+			width: 300px;
+			margin: 0 auto;
+		}
+
+		.first__logo img {
+			width: 100%;
+		}
+
+		@media screen and (max-width: 400px) {
+			.first__logo {
+				width: 100%;
+				margin: 0 auto;
+			}
+		}
+	</style>
+
 </head>
 
-<body>
+<body
+	style="background-image: url('{% static 'images/firstcitizenbg-background.jpg' %}'); background-attachment: fixed; background-size: cover">
 	<main class="d-flex w-100">
 		<div class="container d-flex flex-column">
 			<div class="row vh-100">
 				<div class="col-sm-10 col-md-8 col-lg-6 col-xl-5 mx-auto d-table h-100">
 					<div class="d-table-cell align-middle">
-						<div class="text-center mt-4">
-							<h1 class="h2">Welcome back!</h1>
-							<p class="lead">Sign in to your account to continue</p>
-						</div>
+
 
 						<div class="card">
 
@@ -47,6 +66,16 @@
 							{% endif %}
 							<div class="card-body">
 								<div class="m-sm-3">
+									<div class="first__logo mx-auto">
+										<img src="{% static 'images/firstoriginallogo.png' %}" alt="">
+									</div>
+									<div class="text-center mt-4">
+										<h1 class="h2">Welcome back!</h1>
+										<p class="lead">Sign in to your account to continue</p>
+									</div>
+
+									<!-- <hr class="mb-3"> -->
+
 									<form method="POST" onsubmit="setLoading(this);">
 										{% csrf_token %}
 										<div class="mb-3">
@@ -74,10 +103,11 @@
 									</form>
 								</div>
 							</div>
+							<div class="text-center mb-3">
+								Don't have an account? <a href="{% url 'register' %}">Sign up</a>
+							</div>
 						</div>
-						<div class="text-center mb-3">
-							Don't have an account? <a href="{% url 'register' %}">Sign up</a>
-						</div>
+
 					</div>
 				</div>
 			</div>
