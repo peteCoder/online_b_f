@@ -16,7 +16,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col mt-0">
-                                    <h5 class="card-title">TOTOL BALANCE</h5>
+                                    <h5 class="card-title">TOTAL BALANCE</h5>
                                 </div>
                                 <div class="col-auto">
                                     <div class="stat text-primary">
@@ -24,7 +24,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <h1 class="mt-1 mb-3">${{user.get_total_amount_in_account}}</h1>
+                            <h1 class="mt-1 mb-3 text-md" style="font-size: 25px !important;">
+                                ${{user.get_total_amount_in_account}}</h1>
                             <!-- <div class="mb-0">
                                 <span class="text-success"><i class="mdi mdi-arrow-bottom-right"></i> 4.7%
                                 </span>
@@ -50,7 +51,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <h1 class="mt-1 mb-3">${{ account.balance }}</h1>
+                            <h1 class="mt-1 mb-3 " style="font-size: 25px !important;">${{ account.balance }}</h1>
                             <!-- <div class="mb-0">
                                 <span class="text-success"><i class="mdi mdi-arrow-bottom-right"></i> 4.7%
                                 </span>
@@ -77,7 +78,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <h1 class="mt-1 mb-3">${{ loan.amount }}</h1>
+                            <h1 class="mt-1 mb-3" style="font-size: 25px !important;">${{ loan.amount }}</h1>
                             <!-- <div class="mb-0">
                                 <span class="text-success"><i class="mdi mdi-arrow-bottom-right"></i> 4.7%
                                 </span>
@@ -255,5 +256,78 @@
 
 
 {% block script %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+
+        // Get data passed from the backend
+        var checkingData = JSON.parse('{{ checking_data|safe }}');
+        var savingsData = JSON.parse('{{ savings_data|safe }}');
+        var months = JSON.parse('{{ months_data|safe }}');
+
+
+
+        console.log(months)
+
+        // Line chart
+        new Chart(document.getElementById("recent-transaction-line"), {
+            type: "line",
+            data: {
+                labels: months,
+                datasets: [{
+                    label: "Checking Account ($)",
+                    fill: true,
+                    backgroundColor: "transparent",
+                    borderColor: window.theme.primary,
+                    data: checkingData
+                }, {
+                    label: "Saving Account ($)",
+                    fill: true,
+                    backgroundColor: "transparent",
+                    borderColor: "#ff0000",
+                    borderDash: [4, 4],
+                    data: savingsData
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    intersect: false
+                },
+                hover: {
+                    intersect: true
+                },
+                plugins: {
+                    filler: {
+                        propagate: false
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        reverse: true,
+                        gridLines: {
+                            color: "rgba(0,0,0,0.05)"
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            stepSize: 500
+                        },
+                        display: true,
+                        borderDash: [5, 5],
+                        gridLines: {
+                            color: "rgba(0,0,0,0)",
+                            fontColor: "#fff"
+                        }
+                    }]
+                }
+            }
+        });
+    });
+</script>
 
 {% endblock %}

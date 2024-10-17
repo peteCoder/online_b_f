@@ -1,11 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from .managers import CustomUserManager
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from functools import reduce
+import random
+
+
 
 # Create your models here.
 
@@ -15,12 +16,35 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     Custom User model for the bank app where email is the unique identifier for authentication.
     """
 
+    EMPLOYMENT_STATUS = [
+        ("employed", "employed"),
+        ("self-employed", "self-employed"),
+        ("unemployed", "unemployed"),
+    ]
+    PREFERRED_ACCOUNT_TYPE = [
+        ('CHECKING', 'Checking'),
+        ('SAVINGS', 'Savings'),
+        ('MONEY_MARKET', 'Money Market'),
+        ('CD', 'Certificate of Deposit (CD)'),
+    ]
+
+
     email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=15, unique=True)
-    address = models.TextField()
-    ssn = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50, blank=False)  # Required
+    last_name = models.CharField(max_length=50, blank=False)   # Required
+    phone_number = models.CharField(max_length=15, unique=True, blank=False)  # Required
+    address = models.TextField(blank=False)  # Required
+    ssn = models.CharField(max_length=50, blank=False)  # Required
+
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    annual_income = models.CharField(max_length=100, blank=True, null=True)
+    employment_status = models.CharField(max_length=100, choices=EMPLOYMENT_STATUS, blank=True, null=True)
+    preferred_account_type = models.CharField(max_length=100, choices=PREFERRED_ACCOUNT_TYPE, blank=True, null=True)
+    profile_image = models.ImageField(upload_to="profile/images", blank=True, null=True)
+
+
+
     
     date_joined = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
@@ -37,64 +61,58 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     @property
     def get_total_amount_in_account(self):
         # User account balance
-        accounts = self.profile.account_set.all()
-        total = float(reduce(lambda x,y :x.balance + y.balance, accounts))
-        return total
+        accounts = self.account_set.all()
+        subtotal = 0
+        for acc in accounts:
+            subtotal += acc.balance
+        return subtotal
     
     class Meta:
         verbose_name_plural = "Users"
         verbose_name = "User"
 
-class Profile(models.Model):
-    EMPLOYMENT_STATUS = [
-        ("employed", "employed"),
-        ("self-employed", "self-employed"),
-        ("unemployed", "unemployed"),
-    ]
-    PREFERRED_ACCOUNT_TYPE = [
-        ('CHECKING', 'Checking'),
-        ('SAVINGS', 'Savings'),
-        ('MONEY_MARKET', 'Money Market'),
-        ('CD', 'Certificate of Deposit (CD)'),
-    ]
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=15)
-    address = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    annual_income = models.CharField(max_length=100)
-    employment_status = models.CharField(max_length=100, choices=EMPLOYMENT_STATUS)
-    preferred_account_type = models.CharField(max_length=100, choices=PREFERRED_ACCOUNT_TYPE)
-    profile_image = models.ImageField(upload_to="profile/images")
 
-    def __str__(self):
-        return self.user.email
-    
-    class Meta:
-        verbose_name_plural = "Profiles"
-        verbose_name = "Profile"
+
+def change_account_location():
+    ACCOUNT_LOCATIONS = [
+        "1475 Huntington Drive Duarte, California 91010",
+        "2171 SE Federal Highway Stuart, Florida 34994",
+        "2171 SE Federal Highway Stuart, Florida 34994",
+        "2775 Buford Highway Duluth, GA 30096",
+        "2775 Buford Highway Duluth, GA 30096",
+        "128 Loyola Drive Myrtle Beach, SC 29588",
+        "4040 River Oaks Drive Myrtle Beach, SC 29579",
+    ]
+    location = random.choice(ACCOUNT_LOCATIONS)
+    return location
+
 
 
 class Account(models.Model):
     ACCOUNT_TYPES = (
         ('CHECKING', 'Checking'),
         ('SAVINGS', 'Savings'),
-        ('MONEY_MARKET', 'Money Market'),
-        ('CD', 'Certificate of Deposit (CD)'),
     )
 
-    customer = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     account_number = models.CharField(max_length=20, unique=True)
     account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    bank_name = models.CharField(max_length=200, blank=True, null=True, default="FirstCitzen Bank")
+    location = models.CharField(max_length=500, blank=True, null=True, default=change_account_location)
+    ach_routing = models.CharField(max_length=200, blank=True, null=True)
 
+    
     def __str__(self):
-        return f"{self.customer.user.email} - {self.account_type} ({self.account_number})"
+        return f"{self.customer.email} - {self.account_type} ({self.account_number})"
 
     class Meta:
         verbose_name_plural = "Accounts"
         verbose_name = "Account"
+
+
 
 class Transaction(models.Model):
     TRANSACTION_TYPES = (
@@ -103,8 +121,7 @@ class Transaction(models.Model):
         ('TRANSFER', 'Transfer'),
     )
 
-    
-    
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE) 
     from_account = models.ForeignKey(Account, related_name='from_transactions', on_delete=models.CASCADE)
     to_account = models.ForeignKey(Account, related_name='to_transactions', on_delete=models.CASCADE, null=True, blank=True)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
@@ -125,7 +142,7 @@ class Card(models.Model):
         ('CREDIT', 'Credit'),
     )
 
-    customer = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     card_number = models.CharField(max_length=16, unique=True)
     card_type = models.CharField(max_length=6, choices=CARD_TYPES)
@@ -140,7 +157,7 @@ class Card(models.Model):
         verbose_name = "Card"
 
 class Loan(models.Model):
-    customer = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2)
     loan_date = models.DateTimeField(auto_now_add=True)
@@ -148,7 +165,7 @@ class Loan(models.Model):
     is_paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Loan for {self.customer.user.email} - {self.amount}"
+        return f"Loan for {self.customer.email} - {self.amount}"
     
     class Meta:
         verbose_name_plural = "Loans"
@@ -156,5 +173,28 @@ class Loan(models.Model):
 
 
 
+class Transfer(models.Model):
+    ACCOUNT_TYPES = (
+        ('CHECKING', 'Checking'),
+        ('SAVINGS', 'Savings'),
+    )
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    from_account = models.ForeignKey(Account, related_name='transfered_from', on_delete=models.CASCADE)
+    
+    account_holder_name = models.CharField(max_length=200, blank=True, null=True)
+    account_number = models.CharField(max_length=200, blank=True, null=True)
+    ach_routing = models.CharField(max_length=200, blank=True, null=True)
+    account_type = models.CharField(max_length=200, choices=ACCOUNT_TYPES, blank=True, null=True)
+    bank_name = models.CharField(max_length=200, blank=True, null=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    address = models.CharField(max_length=500, blank=True, null=True)
+
+
+    def __str__(self):
+        return f"Transfer for {self.user.email} - {self.amount}"
+    
+    class Meta:
+        verbose_name_plural = "Transactions"
+        verbose_name = "Transaction"
 
 

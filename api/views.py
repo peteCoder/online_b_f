@@ -7,7 +7,7 @@ from .helpers import check_email, is_valid_password
 
 
 from django.shortcuts import render
-from app.models import Account, Transaction, Loan, Profile
+from app.models import Account, Transaction, Loan
 
 from django.contrib.auth import get_user_model
 
